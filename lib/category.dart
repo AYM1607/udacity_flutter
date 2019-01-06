@@ -1,6 +1,11 @@
 // To keep your imports tidy, follow the ordering guidelines at
 // https://www.dartlang.org/guides/language/effective-dart/style#ordering
 import 'package:flutter/material.dart';
+import 'converter_route.dart';
+import 'unit.dart';
+
+final _height = 100.0;
+final _radius = BorderRadius.circular(_height / 2);
 
 /// A custom [Category] widget.
 ///
@@ -10,17 +15,37 @@ class Category extends StatelessWidget {
   final String name;
   final IconData icon;
   final Color color;
-
-  static const _height = 100.0;
-  static const _radius = BorderRadius.all(Radius.circular(50.0));
+  final List<Unit> units;
 
   /// Creates a [Category].
   ///
   /// A [Category] saves the name of the Category (e.g. 'Length'), its color for
   /// the UI, and the icon that represents it (e.g. a ruler).
-  // TODO: You'll need the name, color, and iconLocation from main.dart
   const Category(
-      {@required this.name, @required this.icon, @required this.color});
+      {Key key,
+      @required this.name,
+      @required this.icon,
+      @required this.color,
+      @required this.units})
+      : super(key: key);
+
+  void _navigateToConverter(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: color,
+            title: Text(name),
+          ),
+          body: ConverterRoute(
+            units: this.units,
+            color: this.color,
+            name: this.name,
+          ),
+        );
+      }),
+    );
+  }
 
   /// Builds a custom widget that shows [Category] information.
   ///
@@ -31,7 +56,6 @@ class Category extends StatelessWidget {
   // Theme ancestor in the tree. Below, we obtain the display1 text theme.
   // See https://docs.flutter.io/flutter/material/Theme-class.html
   Widget build(BuildContext context) {
-    // TODO: Build the custom widget here, referring to the Specs.
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -41,7 +65,7 @@ class Category extends StatelessWidget {
           borderRadius: _radius,
           splashColor: color,
           highlightColor: color,
-          onTap: () => print('I was pressed'),
+          onTap: () => _navigateToConverter(context),
           child: Row(
             children: <Widget>[
               Padding(

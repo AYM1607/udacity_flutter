@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'category.dart';
+import 'unit.dart';
 
 const appColor = Colors.lightBlue;
 
@@ -15,15 +16,7 @@ const appColor = Colors.lightBlue;
 /// While it is named CategoryRoute, a more apt name would be CategoryScreen,
 /// because it is responsible for the UI at the route's destination.
 class CategoryRoute extends StatelessWidget {
-  CategoryRoute() {
-    for (var i = 0; i < _categoryNames.length; i++) {
-      _categories.add(Category(
-        name: _categoryNames[i],
-        color: _baseColors[i],
-        icon: Icons.cake,
-      ));
-    }
-  }
+  const CategoryRoute();
 
   static const _categoryNames = <String>[
     'Length',
@@ -47,17 +40,35 @@ class CategoryRoute extends StatelessWidget {
     Colors.red,
   ];
 
-  final List<Category> _categories = <Category>[];
+  static const _appBarStyle = TextStyle(
+    fontSize: 30.0,
+    color: Colors.black,
+  );
 
-  static const _appBarStyle = TextStyle(fontSize: 30.0);
+  /// Returns a list of mock [Unit]s.
+  List<Unit> _retrieveUnitList(String categoryName) {
+    return List.generate(10, (int i) {
+      i += 1;
+      return Unit(
+        name: '$categoryName Unit $i',
+        conversion: i.toDouble(),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Create a list of the eight Categories, using the names and colors
-    // from above. Use a placeholder icon, such as `Icons.cake` for each
-    // Category. We'll add custom icons later.
+    final List<Category> _categories = <Category>[];
 
-    // TODO: Create a list view of the Categories
+    for (var i = 0; i < _categoryNames.length; i++) {
+      _categories.add(Category(
+        name: _categoryNames[i],
+        color: _baseColors[i],
+        icon: Icons.cake,
+        units: _retrieveUnitList(_categoryNames[i]),
+      ));
+    }
+
     final listView = Container(
       color: appColor,
       child: ListView.builder(
@@ -66,7 +77,6 @@ class CategoryRoute extends StatelessWidget {
       ),
     );
 
-    // TODO: Create an App Bar
     final appBar = AppBar(
       backgroundColor: appColor,
       elevation: 0,
