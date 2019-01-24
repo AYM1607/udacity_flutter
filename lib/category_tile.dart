@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import 'category.dart';
-import 'unit_converter.dart';
 
 // We use an underscore to indicate that these variables are private.
 // See https://www.dartlang.org/guides/language/effective-dart/design#libraries
@@ -53,7 +52,6 @@ class CategoryTile extends StatelessWidget {
           splashColor: category.color['splash'],
           // We can use either the () => function() or the () { function(); }
           // syntax.
-          // TODO: This should call the onTap() passed into the constructor
           onTap: () => onTap(category),
           child: Padding(
             padding: EdgeInsets.all(8.0),
