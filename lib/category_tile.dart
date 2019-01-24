@@ -1,4 +1,3 @@
-
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -32,7 +31,6 @@ class CategoryTile extends StatelessWidget {
         assert(onTap != null),
         super(key: key);
 
-
   /// Builds a custom widget that shows [Category] information.
   ///
   /// This information includes the icon, name, and color for the [Category].
@@ -61,12 +59,13 @@ class CategoryTile extends StatelessWidget {
               // Prefer to use the literal syntax, i.e. `[]`, instead of `List()`.
               // You can add the type argument if you'd like, i.e. <Widget>[].
               // See https://www.dartlang.org/guides/language/effective-dart/usage#do-use-collection-literals-when-possible
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Icon(
+                  child: Image.asset(
                     category.iconLocation,
-                    size: 60.0,
+                    width: 60,
+                    height: 60,
                   ),
                 ),
                 Center(

@@ -36,7 +36,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
   // `children` property, we call .toList() on it.
   // For more details, see https://github.com/dart-lang/sdk/issues/27755
   final _categories = <Category>[];
-
   static const _baseColors = <ColorSwatch>[
     ColorSwatch(0xFF6AB7A8, {
       'highlight': Color(0xFF6AB7A8),
@@ -72,6 +71,16 @@ class _CategoryRouteState extends State<CategoryRoute> {
       'error': Color(0xFF912D2D),
     }),
   ];
+  
+  static const _imagePaths = [
+    'assets/icons/length.png',
+    'assets/icons/area.png',
+    'assets/icons/volume.png',
+    'assets/icons/mass.png',
+    'assets/icons/time.png',
+    'assets/icons/digital_storage.png',
+    'assets/icons/power.png',
+  ];
 
   @override
   Future<void> didChangeDependencies() async {
@@ -87,21 +96,23 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Future<void> _retrieveLocalCategories() async {
     // Consider omitting the types for local variables. For more details on Effective
     // Dart Usage, see https://www.dartlang.org/guides/language/effective-dart/usage
-    final json = DefaultAssetBundle.of(context)
+    final json = DefaultAssetBundle
+        .of(context)
         .loadString('assets/data/regular_units.json');
     final data = JsonDecoder().convert(await json);
     if (data is! Map) {
       throw ('Data retrieved from API is not a Map');
     }
-    int categoryIndex = 0;
-    data.forEach((String key, dynamic data) {
-      final units =
-          data.map<Unit>((dynamic data) => Unit.fromJson(data)).toList();
-      final category = Category(
-        color: _baseColors[categoryIndex],
+    var categoryIndex = 0;
+    data.keys.forEach((key) {
+      final List<Unit> units =
+          data[key].map<Unit>((dynamic data) => Unit.fromJson(data)).toList();
+
+      var category = Category(
         name: key,
-        iconLocation: Icons.cake,
         units: units,
+        color: _baseColors[categoryIndex],
+        iconLocation: _imagePaths[categoryIndex],
       );
       setState(() {
         if (categoryIndex == 0) {
@@ -148,7 +159,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
