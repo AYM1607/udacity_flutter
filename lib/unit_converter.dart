@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO: Import necessary packages
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import 'api.dart';
 import 'category.dart';
 import 'unit.dart';
 
@@ -33,6 +37,7 @@ class _UnitConverterState extends State<UnitConverter> {
   List<DropdownMenuItem> _unitMenuItems;
   bool _showValidationError = false;
   final _inputKey = GlobalKey(debugLabel: 'inputText');
+  final _api = Api();
 
   @override
   void initState() {
@@ -98,6 +103,8 @@ class _UnitConverterState extends State<UnitConverter> {
     return outputNum;
   }
 
+  // TODO: If in the Currency [Category], call the API to retrieve the conversion.
+  // Remember, the API call is an async function.
   void _updateConversion() {
     setState(() {
       _convertedValue =
@@ -167,8 +174,8 @@ class _UnitConverterState extends State<UnitConverter> {
       child: Theme(
         // This sets the color of the [DropdownMenuItem]
         data: Theme.of(context).copyWith(
-          canvasColor: Colors.grey[50],
-        ),
+              canvasColor: Colors.grey[50],
+            ),
         child: DropdownButtonHideUnderline(
           child: ButtonTheme(
             alignedDropdown: true,
@@ -254,19 +261,24 @@ class _UnitConverterState extends State<UnitConverter> {
       ],
     );
 
-    // in landscape mode
-    return OrientationBuilder(
-      builder: (BuildContext context, Orientation orientation) {
-        if (orientation == Orientation.portrait) {
-          return converter;
-        }
-        return Center(
-          child: Container(
-            width: 450,
-            child: converter,
-          ),
-        );
-      },
+    // Based on the orientation of the parent widget, figure out how to best
+    // lay out our converter.
+    return Padding(
+      padding: _padding,
+      child: OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          if (orientation == Orientation.portrait) {
+            return converter;
+          } else {
+            return Center(
+              child: Container(
+                width: 450.0,
+                child: converter,
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

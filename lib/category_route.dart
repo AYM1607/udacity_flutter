@@ -7,10 +7,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+// TODO: Import necessary package
 import 'backdrop.dart';
 import 'category.dart';
 import 'category_tile.dart';
 import 'unit.dart';
+import 'api.dart';
 import 'unit_converter.dart';
 
 /// Loads in unit conversion data, and displays the data.
@@ -71,8 +73,7 @@ class _CategoryRouteState extends State<CategoryRoute> {
       'error': Color(0xFF912D2D),
     }),
   ];
-  
-  static const _imagePaths = [
+  static const _icons = <String>[
     'assets/icons/length.png',
     'assets/icons/area.png',
     'assets/icons/volume.png',
@@ -80,15 +81,20 @@ class _CategoryRouteState extends State<CategoryRoute> {
     'assets/icons/time.png',
     'assets/icons/digital_storage.png',
     'assets/icons/power.png',
+    'assets/icons/currency.png',
   ];
+  final _api = Api();
 
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     // We have static unit conversions located in our
     // assets/data/regular_units.json
+    // and we want to also obtain up-to-date Currency conversions from the web
+    // We only want to load our data in once
     if (_categories.isEmpty) {
       await _retrieveLocalCategories();
+      await _retrieveApiCategory();
     }
   }
 
@@ -96,8 +102,7 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Future<void> _retrieveLocalCategories() async {
     // Consider omitting the types for local variables. For more details on Effective
     // Dart Usage, see https://www.dartlang.org/guides/language/effective-dart/usage
-    final json = DefaultAssetBundle
-        .of(context)
+    final json = DefaultAssetBundle.of(context)
         .loadString('assets/data/regular_units.json');
     final data = JsonDecoder().convert(await json);
     if (data is! Map) {
@@ -112,7 +117,7 @@ class _CategoryRouteState extends State<CategoryRoute> {
         name: key,
         units: units,
         color: _baseColors[categoryIndex],
-        iconLocation: _imagePaths[categoryIndex],
+        iconLocation: _icons[categoryIndex],
       );
       setState(() {
         if (categoryIndex == 0) {
@@ -121,6 +126,20 @@ class _CategoryRouteState extends State<CategoryRoute> {
         _categories.add(category);
       });
       categoryIndex += 1;
+    });
+  }
+
+  // TODO: Add the Currency Category retrieved from the API, to our _categories
+  /// Retrieves a [Category] and its [Unit]s from an API on the web
+  Future<void> _retrieveApiCategory() async {
+    var units = await _api.getUnits('currency');
+    setState(() {
+      _categories.add(Category(
+        units: units,
+        name: 'Currency',
+        iconLocation: _icons.last,
+        color: _baseColors.last,
+      ));
     });
   }
 
