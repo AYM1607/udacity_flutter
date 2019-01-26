@@ -4,7 +4,7 @@
 
 // TODO: Import relevant packages
 import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
+import 'dart:convert' as converter;
 import 'unit.dart';
 
 /// The REST API retrieves unit conversions for [Categories] that change.
@@ -17,11 +17,16 @@ import 'unit.dart';
 ///   GET /currency/convert: get conversion from one currency amount to another
 class Api {
   static const _url = 'https://flutter.udacity.com/';
+
   // TODO: Add any relevant variables and helper functions
-  Future<Map<String, dynamic>> getJson(String url) async {
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      return convert.jsonDecode(response.body);
+  Future<Map<String, dynamic>> _getJson(String url) async {
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        return converter.jsonDecode(response.body);
+      }
+    } on Exception catch(e) {
+      print('$e');
     }
     return null;
   }
@@ -34,9 +39,8 @@ class Api {
   ///
   /// Returns a list. Returns null on error.
   Future<List<Unit>> getUnits(String category) async {
-    var json = await getJson('$_url$category');
+    var json = await _getJson('$_url$category');
     if (json != null) {
-      print(json['units']); 
       List<Unit> units = [];
       json['units']
           .forEach((dynamic jsonUnit) => units.add(Unit.fromJson(jsonUnit)));
@@ -45,9 +49,20 @@ class Api {
     return null;
   }
 
+  String _getConversionUrl(Unit fromUnit, Unit toUnit, double value) {
+    return '${_url}currency/convert?from=${fromUnit.name}&to=${toUnit.name}&amount=$value';
+  }
   // TODO: Create convert()
   /// Given two units, converts from one to another.
   ///
   /// Returns a double, which is the converted amount. Returns null on error.
+  Future<double> convert(Unit fromUnit, Unit toUnit, double value) async {
+    var url = _getConversionUrl(fromUnit, toUnit, value);
+    var json = await _getJson(url);
+    if (json['status'] == 'ok') {
+      return json['conversion'].toDouble();
+    }
+    return null;
+  }
 
 }
