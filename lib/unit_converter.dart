@@ -36,7 +36,7 @@ class _UnitConverterState extends State<UnitConverter> {
   List<DropdownMenuItem> _unitMenuItems;
   bool _showValidationError = false;
   final _inputKey = GlobalKey(debugLabel: 'inputText');
-  // TODO: Add a flag for whether to show error UI
+  bool _showUIError = false;
 
   @override
   void initState() {
@@ -105,13 +105,19 @@ class _UnitConverterState extends State<UnitConverter> {
   Future<void> _updateConversion() async {
     // Our API has a handy convert function, so we can use that for
     // the Currency [Category]
+    setState(() {
+      _showUIError = false;
+    });
     if (widget.category.name == apiCategory['name']) {
       final api = Api();
       final conversion = await api.convert(apiCategory['route'],
           _inputValue.toString(), _fromValue.name, _toValue.name);
-      // TODO: Check whether to show an error UI
       setState(() {
-        _convertedValue = _format(conversion);
+        if (conversion != null) {
+          _convertedValue = _format(conversion);
+        } else {
+          _showUIError = true;
+        }
       });
     } else {
       // For the static units, we do the conversion ourselves
@@ -184,8 +190,8 @@ class _UnitConverterState extends State<UnitConverter> {
       child: Theme(
         // This sets the color of the [DropdownMenuItem]
         data: Theme.of(context).copyWith(
-              canvasColor: Colors.grey[50],
-            ),
+          canvasColor: Colors.grey[50],
+        ),
         child: DropdownButtonHideUnderline(
           child: ButtonTheme(
             alignedDropdown: true,
@@ -203,7 +209,20 @@ class _UnitConverterState extends State<UnitConverter> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Build an error UI
+    final errorUI = Container(
+      height: 400.0,
+      width: 400.0,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Center(
+        child: Text(
+          'Error!!!!',
+          style: Theme.of(context).textTheme.title,
+        ),
+      ),
+    );
 
     final input = Padding(
       padding: _padding,
@@ -279,7 +298,9 @@ class _UnitConverterState extends State<UnitConverter> {
       padding: _padding,
       child: OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
-          if (orientation == Orientation.portrait) {
+          if (_showUIError == true) {
+            return errorUI;
+          } else if (orientation == Orientation.portrait) {
             return converter;
           } else {
             return Center(
