@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO: Import necessary packages
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -37,7 +36,7 @@ class _UnitConverterState extends State<UnitConverter> {
   List<DropdownMenuItem> _unitMenuItems;
   bool _showValidationError = false;
   final _inputKey = GlobalKey(debugLabel: 'inputText');
-  final _api = Api();
+  // TODO: Add a flag for whether to show error UI
 
   @override
   void initState() {
@@ -103,17 +102,21 @@ class _UnitConverterState extends State<UnitConverter> {
     return outputNum;
   }
 
-  // TODO: If in the Currency [Category], call the API to retrieve the conversion.
-  // Remember, the API call is an async function.
   Future<void> _updateConversion() async {
-    if (widget.category.name == 'Currency') {
-      var convertedValue = _format(await _api.convert(_fromValue, _toValue, _inputValue));
+    // Our API has a handy convert function, so we can use that for
+    // the Currency [Category]
+    if (widget.category.name == apiCategory['name']) {
+      final api = Api();
+      final conversion = await api.convert(apiCategory['route'],
+          _inputValue.toString(), _fromValue.name, _toValue.name);
+      // TODO: Check whether to show an error UI
       setState(() {
-        _convertedValue = convertedValue;
+        _convertedValue = _format(conversion);
       });
     } else {
+      // For the static units, we do the conversion ourselves
       setState(() {
-          _convertedValue = _format(
+        _convertedValue = _format(
             _inputValue * (_toValue.conversion / _fromValue.conversion));
       });
     }
@@ -181,8 +184,8 @@ class _UnitConverterState extends State<UnitConverter> {
       child: Theme(
         // This sets the color of the [DropdownMenuItem]
         data: Theme.of(context).copyWith(
-          canvasColor: Colors.grey[50],
-        ),
+              canvasColor: Colors.grey[50],
+            ),
         child: DropdownButtonHideUnderline(
           child: ButtonTheme(
             alignedDropdown: true,
@@ -200,6 +203,8 @@ class _UnitConverterState extends State<UnitConverter> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Build an error UI
+
     final input = Padding(
       padding: _padding,
       child: Column(
