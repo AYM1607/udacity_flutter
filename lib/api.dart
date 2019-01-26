@@ -41,8 +41,9 @@ class Api {
     return null;
   }
 
+  // Fixed url
   String _getConversionUrl(Unit fromUnit, Unit toUnit, double value) {
-    return '${_url}/currency/convert?from=${fromUnit.name}&to=${toUnit.name}&amount=$value';
+    return '$_url/currency/convert?from=${fromUnit.name}&to=${toUnit.name}&amount=$value';
   }
 
   Future<double> convert(Unit fromUnit, Unit toUnit, double value) async {
