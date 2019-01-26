@@ -16,9 +16,8 @@ import 'unit.dart';
 ///   GET /currency: get a list of currencies
 ///   GET /currency/convert: get conversion from one currency amount to another
 class Api {
-  static const _url = 'https://flutter.udacity.com/';
+  static const _url = 'https://flutter.udacity.com';
 
-  // TODO: Add any relevant variables and helper functions
   Future<Map<String, dynamic>> _getJson(String url) async {
     try {
       var response = await http.get(url);
@@ -31,15 +30,8 @@ class Api {
     return null;
   }
 
-
-  /// Gets all the units and conversion rates for a given category.
-  ///
-  /// The `category` parameter is the name of the [Category] from which to
-  /// retrieve units. We pass this into the query parameter in the API call.
-  ///
-  /// Returns a list. Returns null on error.
   Future<List<Unit>> getUnits(String category) async {
-    var json = await _getJson('$_url$category');
+    var json = await _getJson('$_url/$category');
     if (json != null) {
       List<Unit> units = [];
       json['units']
@@ -50,12 +42,9 @@ class Api {
   }
 
   String _getConversionUrl(Unit fromUnit, Unit toUnit, double value) {
-    return '${_url}currency/convert?from=${fromUnit.name}&to=${toUnit.name}&amount=$value';
+    return '${_url}/currency/convert?from=${fromUnit.name}&to=${toUnit.name}&amount=$value';
   }
-  // TODO: Create convert()
-  /// Given two units, converts from one to another.
-  ///
-  /// Returns a double, which is the converted amount. Returns null on error.
+
   Future<double> convert(Unit fromUnit, Unit toUnit, double value) async {
     var url = _getConversionUrl(fromUnit, toUnit, value);
     var json = await _getJson(url);
